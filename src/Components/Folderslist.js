@@ -1,22 +1,80 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from 'react-hook-form';
-import Form from 'react-bootstrap/Form';
-import Button from 'react-bootstrap/Button';
-const Folderslist = ({ folders, setFolders }) => {
-    const { register, handleSubmit, formState: { errors } } = useForm();
-    const onSubmit = data => {
-        fetch("http://localhost:9090/api", {
-            'method':'POST',
-            'headers':{'Content-Type': 'application/json'},
-            'body':JSON.stringify(data)
+import  Modal  from "react-bootstrap/Modal";
+
+const Folderslist = ({ folders, setListUpdated }) => {
+    const [task, setTask] = useState([])
+    const getTask = () => {
+        fetch("http://localhost:9090/api/task")
+            .then(res => res.json())
+            .then(res => setTask(res))
+            handleShow();
+    }
+
+    const handleDelete = (id) => {
+        console.log("id" + id.target.id)
+
+        fetch('http://localhost:9090/api/' + id.target.id, {
+            method: 'DELETE'
         })
-        .then(resp=>resp.json())
-        .then(json=>{
-            console.log(json);
-            setFolders(json);
-        })
-    };
-    console.log(errors);
+            .then(res => res.json())
+            .then(res => console.log(res))
+
+        setListUpdated(true)
+
+    }
+    const[show, setShow]= useState(false);
+    const handleClose = ()=> setShow(false);
+    const handleShow=()=>setShow(true)
+
+    const modal = (
+        <Modal show={show} onHide={handleClose}>
+            <Modal.Header closeButton>
+                <Modal.Title>To-Do List</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                {
+                    
+                    <table className="table1">
+                    <thead>
+                        
+    
+                    </thead>
+                    <tbody>
+                        {
+                            task.map(task => (
+                                <tr key={task.idtasks}>
+    
+                                    <td> 
+                                    <div className="form-check">
+                                        <input
+                                            className="form-check-input"
+                                            type="checkbox"
+                                            defaultValue=""
+                                            id="flexCheckDefault"
+                                            defaultChecked={task.taskscheck}
+                                        />
+                                        <label className="form-check-label" htmlFor="flexCheckDefault">
+                                            {task.task}
+                                        </label>
+                                    </div>
+                                    </td>
+                                   
+                                    <td >
+                                        <a id={task.idtasks} href="#" >Edit</a>
+                                    </td>
+                                </tr>
+                            ))
+    
+                        }
+                    </tbody>
+                </table> 
+                }
+
+            </Modal.Body>
+        </Modal>
+    );
+
     return (
         <div>
             <table className="table">
@@ -30,15 +88,15 @@ const Folderslist = ({ folders, setFolders }) => {
                 </thead>
                 <tbody>
                     {
-                        folders.map(item => (
-                            <tr key={item.idfolders}>
+                        folders.map(folder => (
+                            <tr key={folder.idfolders}>
 
-                                <td> {item.folder}</td>
+                                <td> {folder.folder}</td>
                                 <td >
-                                    <a href="#" >View Items</a>
+                                    <a href="#" onClick={getTask} >View Items</a>
                                 </td>
                                 <td >
-                                    <a href="#" >Remove</a>
+                                    <a id={folder.idfolders} onClick={handleDelete} href="#" >Remove</a>
                                 </td>
                             </tr>
                         ))
@@ -46,16 +104,9 @@ const Folderslist = ({ folders, setFolders }) => {
                     }
                 </tbody>
             </table>
-            <Form onSubmit={handleSubmit(onSubmit)}>
 
-                <Form.Control type="text" placeholder="New Folder" {...register("folder", {})} style={{ maxWidth: "350px" }} />
-                <Button variant="primary" type="submit">
-                Create
-                </Button>
 
-            </Form>
-            
-
+            {modal}
         </div>
 
     );
