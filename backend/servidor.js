@@ -4,6 +4,7 @@ const routes = require('./routes')
 const app = express()
 const mysql = require('mysql')
 const con = require('express-myconnection')
+const cors = require('cors')
 const db = {
     host: 'localhost',
     port: '3306',
@@ -17,6 +18,7 @@ const db = {
 
 app.use(con(mysql, db, 'single'))
 app.use(express.json())
+app.use(cors())
 
 app.set('port', process.env.PORT || 9090)
 app.get('/', (req, res) => {
