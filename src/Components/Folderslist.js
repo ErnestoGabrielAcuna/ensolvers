@@ -4,15 +4,24 @@ import  Modal  from "react-bootstrap/Modal";
 
 const Folderslist = ({ folders, setListUpdated }) => {
     const [task, setTask] = useState([])
-    const getTask = () => {
-        fetch("http://localhost:9090/api/task")
+
+    const getTask = (id) => {
+        fetch("http://localhost:9090/api/task"+id.target.id)
             .then(res => res.json())
             .then(res => setTask(res))
-            handleShow();
+            setShow(true)
     }
-
+    const saveCheck=(id)=>{
+        fetch("http://localhost:9090/api/task"+id.target.id,{
+            'method': 'PUT'
+            
+        })
+            .then(res => res.json())
+            .then(res => setTask(res))
+            setShow(true)
+    }
     const handleDelete = (id) => {
-        console.log("id" + id.target.id)
+       
 
         fetch('http://localhost:9090/api/' + id.target.id, {
             method: 'DELETE'
@@ -25,7 +34,7 @@ const Folderslist = ({ folders, setListUpdated }) => {
     }
     const[show, setShow]= useState(false);
     const handleClose = ()=> setShow(false);
-    const handleShow=()=>setShow(true)
+    const handleShow=()=>setShow()
 
     const modal = (
         <Modal show={show} onHide={handleClose}>
@@ -50,8 +59,9 @@ const Folderslist = ({ folders, setListUpdated }) => {
                                         <input
                                             className="form-check-input"
                                             type="checkbox"
+                                            onClick={saveCheck}
                                             defaultValue=""
-                                            id="flexCheckDefault"
+                                            id={task.idtasks}
                                             defaultChecked={task.taskscheck}
                                         />
                                         <label className="form-check-label" htmlFor="flexCheckDefault">
@@ -93,7 +103,7 @@ const Folderslist = ({ folders, setListUpdated }) => {
 
                                 <td> {folder.folder}</td>
                                 <td >
-                                    <a href="#" onClick={getTask} >View Items</a>
+                                    <a id={folder.idfolders} href="#" onClick={getTask} >View Items</a>
                                 </td>
                                 <td >
                                     <a id={folder.idfolders} onClick={handleDelete} href="#" >Remove</a>

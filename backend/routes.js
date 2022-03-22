@@ -46,11 +46,11 @@ routes.put('/:id', (req, res)=>{
     })
 })
 
-routes.get('/task', (req, res)=>{
+routes.get('/task:id', (req, res)=>{
     req.getConnection((err, conn)=>{
         if(err) return res.send(err)
 
-        conn.query('SELECT * FROM tasks', (err, rows)=>{
+        conn.query('SELECT * FROM tasks WHERE idfolders = ?', [req.params.id], (err, rows)=>{
             if(err) return res.send(err)
 
             res.json(rows)
