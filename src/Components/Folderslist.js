@@ -1,40 +1,50 @@
 import React, { useState } from "react";
 import { useForm } from 'react-hook-form';
-import  Modal  from "react-bootstrap/Modal";
+import Modal from "react-bootstrap/Modal";
 
 const Folderslist = ({ folders, setListUpdated }) => {
+
     const [task, setTask] = useState([])
+    
 
     const getTask = (id) => {
-        fetch("http://localhost:9090/api/task"+id.target.id)
+        fetch("http://localhost:9090/api/task" + id.target.id)
             .then(res => res.json())
             .then(res => setTask(res))
-            setShow(true)
+        setShow(true)
     }
-    const saveCheck=(id)=>{
-        fetch("http://localhost:9090/api/task"+id.target.id,{
-            'method': 'PUT'
-            
+
+    const saveCheck = (id) => {
+        let checked;
+        if (id.target.checked) {
+            checked = 1
+        } else {
+            checked = 0
+        }
+        const data = {
+            idtasks: id.target.id,
+            taskscheck: id.target.checked
+        }
+        fetch("http://localhost:9090/api/task" + data, {
+            method: 'PUT'
         })
             .then(res => res.json())
             .then(res => setTask(res))
-            setShow(true)
+        //setListUpdated(true)
     }
-    const handleDelete = (id) => {
-       
 
+    const handleDelete = (id) => {
         fetch('http://localhost:9090/api/' + id.target.id, {
             method: 'DELETE'
         })
             .then(res => res.json())
             .then(res => console.log(res))
-
         setListUpdated(true)
-
     }
-    const[show, setShow]= useState(false);
-    const handleClose = ()=> setShow(false);
-    const handleShow=()=>setShow()
+
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow()
 
     const modal = (
         <Modal show={show} onHide={handleClose}>
@@ -43,44 +53,38 @@ const Folderslist = ({ folders, setListUpdated }) => {
             </Modal.Header>
             <Modal.Body>
                 {
-                    
                     <table className="table1">
-                    <thead>
-                        
-    
-                    </thead>
-                    <tbody>
-                        {
-                            task.map(task => (
-                                <tr key={task.idtasks}>
-    
-                                    <td> 
-                                    <div className="form-check">
-                                        <input
-                                            className="form-check-input"
-                                            type="checkbox"
-                                            onClick={saveCheck}
-                                            defaultValue=""
-                                            id={task.idtasks}
-                                            defaultChecked={task.taskscheck}
-                                        />
-                                        <label className="form-check-label" htmlFor="flexCheckDefault">
-                                            {task.task}
-                                        </label>
-                                    </div>
-                                    </td>
-                                   
-                                    <td >
-                                        <a id={task.idtasks} href="#" >Edit</a>
-                                    </td>
-                                </tr>
-                            ))
-    
-                        }
-                    </tbody>
-                </table> 
-                }
+                        <thead>
+                        </thead>
+                        <tbody>
+                            {
+                                task.map(task => (
+                                    <tr key={task.idtasks}>
 
+                                        <td>
+                                            <div className="form-check">
+                                                <input
+                                                    className="form-check-input"
+                                                    type="checkbox"
+                                                    defaultValue=""
+                                                    id={task.idtasks}
+                                                    defaultChecked={task.taskscheck}
+                                                    
+                                                />
+                                                <label className="form-check-label" htmlFor="flexCheckDefault">
+                                                    {task.task}
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td >
+                                            <a id={task.idtasks} href="#" >Edit</a>
+                                        </td>
+                                    </tr>
+                                ))
+                            }
+                        </tbody>
+                    </table>
+                }
             </Modal.Body>
         </Modal>
     );
@@ -90,35 +94,27 @@ const Folderslist = ({ folders, setListUpdated }) => {
             <table className="table">
                 <thead>
                     <tr>
-
                         <th> Folders</th>
-
                     </tr>
-
                 </thead>
                 <tbody>
                     {
                         folders.map(folder => (
                             <tr key={folder.idfolders}>
-
                                 <td> {folder.folder}</td>
                                 <td >
-                                    <a id={folder.idfolders} href="#" onClick={getTask} >View Items</a>
+                                    <a id={folder.idfolders} onClick={getTask} href="#" >View Items</a>
                                 </td>
                                 <td >
                                     <a id={folder.idfolders} onClick={handleDelete} href="#" >Remove</a>
                                 </td>
                             </tr>
                         ))
-
                     }
                 </tbody>
             </table>
-
-
             {modal}
         </div>
-
     );
 }
 

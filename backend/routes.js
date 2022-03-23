@@ -85,8 +85,6 @@ routes.put('/task:id', (req, res)=>{
         if(err) return res.send(err)
         conn.query('UPDATE tasks set ? WHERE idtasks = ?', [req.body, req.params.id], (err, rows)=>{
             if(err) return res.send(err)
-
-            res.send('task updated!')
         })
     })
 })
