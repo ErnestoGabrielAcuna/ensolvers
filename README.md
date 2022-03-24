@@ -32,3 +32,6 @@ OS: Windows_NT x64 6.3.9600
 UserName: usuario 
 Password: default
 
+### `DB Query`
+the statements for the creation of the database are in the file ensolversdb.sql
+
